@@ -7,7 +7,7 @@ state("JustCause3")
 }
 
 startup {
-    vars.ver = "0.0.1";
+    vars.ver = "1.0";
     vars.restart = false;
     vars.split = 0;
     vars.newSplit = 0;
