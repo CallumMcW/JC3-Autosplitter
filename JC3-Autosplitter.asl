@@ -3,14 +3,15 @@ state("JustCause3")
     bool loading : 0x2F38848, 0x94;
     bool csLoading : 0x2F38848, 0xB0, 0x88, 0x3D0, 0xD8, 0x80;
     bool player : 0x2F2EFF0, 0x558;
-    bool cardsScreen : 0x2F38820, 0xA0, 0x7E8, 0x30, 0x6B0, 0xB8;
-    bool mission : 0x2F38820, 0x80, 0x658, 0x468, 0x668, 0x304;
+    bool autosplit : 0x2F38820, 0xA0, 0x7E8, 0x30, 0x6B0, 0xB8;
 }
 
 startup {
     vars.ver = "1.0";
     vars.restart = false;
-    vars.missionEnd = 0;
+    vars.split = 0;
+    vars.newSplit = 0;
+    vars.splitting = 0;
 
     // Log Output switch for DebugView (enables/disables debug messages)
     var DebugEnabled = true;
@@ -28,15 +29,28 @@ init {
 }
 
 start{
-    vars.missionEnd = 0;
-    vars.restart = false;
+    vars.split = 0;
 }
 
 split{
-    if((vars.missionEnd == 1) && (current.cardsScreen == false) && (old.cardsScreen != current.cardsScreen)){
-        vars.DebugOutput("SPLITTING!!");
-        return true;
-        vars.missionEnd = 0;
+    if (current.autosplit == true){
+        if (vars.splitting == 0){
+            vars.split = (vars.split + 1);
+            vars.splitting = 1;
+            if ((vars.split == 2) | (vars.split == 4) | (vars.split == 6) | (vars.split == 12) | (vars.split == 13) | (vars.split == 15)  | (vars.split == 16)  | (vars.split == 17)  | (vars.split == 18)  | (vars.split == 22)  | (vars.split == 23)  | (vars.split == 24)  | (vars.split == 33)  | (vars.split == 34)  | (vars.split == 35)  | (vars.split == 36)  | (vars.split == 37)  | (vars.split == 38)  | (vars.split == 39)  | (vars.split == 41)  | (vars.split == 42)  | (vars.split == 43)  | (vars.split == 44)){
+                return false;
+                vars.DebugOutput("Cards screen number " + vars.split + ". This is a designated skipped cards screen in Any%");
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+    else{
+        vars.splitting = 0;
     }
 }
 
@@ -51,11 +65,6 @@ update {
     }
     if ((vars.restart == true) && (current.player == true)){
         vars.restart = false;
-    }
-    if((current.mission != old.mission) && (current.mission == false)){
-        // a mission just ended!
-        vars.DebugOutput("mission state changed from " + old.mission + " to " + current.mission);
-        vars.missionEnd = 1;
     }
 }
 
